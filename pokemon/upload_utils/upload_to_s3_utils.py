@@ -7,7 +7,7 @@ from botocore.exceptions import NoCredentialsError
 
 from django.conf import settings
 
-from pokemon.models import FileUpload
+from pokemon.models import FileUpload, Pokemon
 
 
 class UploadToS3:
@@ -32,10 +32,13 @@ class UploadToS3:
             return False, f'{e.__class__} {e}'
 
     @classmethod
-    def upload_file(cls, label, user_id, file_object, name):
+    def upload_file(cls, label: str, user_id: int, file_object, name: str, pokemon_id: int = None,
+                    pokemon: Pokemon = None):
+        pokemon_id = pokemon_id or (pokemon and pokemon.pk)
         status, url = cls.upload_to_s3(file_object=file_object, name=name)
         if status:
-            file_upload = FileUpload.objects.create(file_label=label, file_url=url, user_id=user_id)
+            file_upload = FileUpload.objects.create(
+                file_label=label, file_url=url, user_id=user_id, pokemon_id=pokemon_id)
             return True, file_upload, "Created Successfully"
         return False, None, f"Error in file upload {url}"
 

@@ -1,0 +1,30 @@
+version: '3'
+
+services:  # list of all the services
+  web:
+    build:
+      context: .  # the path where all the files are
+      dockerfile: config/django/Dockerfile  # path of docker file
+    command: gunicorn --bind 0.0.0.0:8000 pokemon_dataset.wsgi:application  # running django app with gunicorn
+    volumes:
+      - .:/app  # volume inside docker
+    expose:
+      - "8000"  # port which will be exposed to receive requests from outside
+    networks:
+      - app-network  # a network needed to connect nginx and django gunicorn service
+
+  nginx:
+    build:
+      context: .
+      dockerfile: config/nginx/Dockerfile
+    ports:
+      - "80:80"   # port number 80 will receive
+    depends_on:
+      - web     # make sure that the web service is up
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge  # connection of both nginx service and django gunicorn service
+

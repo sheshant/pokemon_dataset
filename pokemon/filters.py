@@ -16,6 +16,16 @@ class PokemonFilter(filters.FilterSet):
     abilities = filters.CharFilter(field_name="abilities__name", lookup_expr='icontains')
     egg_groups = filters.CharFilter(field_name="egg_groups__name", lookup_expr='icontains')
     ev_yield = filters.CharFilter(field_name="ev_yield__name", lookup_expr='icontains')
+    o = filters.OrderingFilter(
+        fields=(
+            ('id', 'id'),
+            ('name', 'name'),
+            ('species', 'species'),
+            ('growth_rate', 'growth_rate'),
+            ('height', 'height'),
+            ('weight', 'weight'),
+        ),
+    )
 
     class Meta:
         model = Pokemon

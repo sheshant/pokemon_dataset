@@ -17,11 +17,12 @@ class FileUploadInline(admin.TabularInline):
 
 class PokemonAdmin(admin.ModelAdmin):
     list_display = ['name', 'type_list', 'weight', 'height', 'abilities_list', 'show_images']
+    list_per_page = 20
     search_fields = ['name']
     inlines = [FileUploadInline]
 
     def show_images(self, obj):
-        images = obj.fileupload_set.all()  # Get all related images
+        images = obj.fileupload_set.filter(is_active=True)  # Get all related images
         image_list = [format_html('<img src="{}" width="50" height="50" />'.format(image.file_url)) for image in images]
         return format_html(" ".join(image_list))
 
@@ -40,6 +41,7 @@ class PokemonAdmin(admin.ModelAdmin):
 class FileUploadAdmin(admin.ModelAdmin):
     list_display = ('pokemon__name', 'image_thumbnail')
     search_fields = ['pokemon__name']
+    list_per_page = 20
 
     def image_thumbnail(self, obj):
         return format_html('<img src="{}" width="100" height="100" />'.format(obj.file_url))
